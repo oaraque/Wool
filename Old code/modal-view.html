@@ -1,0 +1,53 @@
+<!-- MODAL TRIGGER SELECTOR -->
+<!-- ko if: selectingTrigger() -->
+<div id="dialog-modal" data-bind="visible: false">
+  <label class="triggerSelect">
+  <select class="triggerSelect-box" data-bind="options: $root.selectedChannel(), value: $root.selectedTrigger, optionsCaption: '...', 
+  optionsText: function (trigger){ return trigger['dcterms:title'] } "></select>
+  </label>
+
+  
+  <!-- ko if: selectedTrigger() != undefined -->
+  <div data-bind="visible: $root.selectedTrigger()['@id']() != '' ">
+    <!-- ko if: true -->
+    <div>
+      <p class="triggerEditor"><span style="font-weight: 900;" data-bind="text: $root.selectedTrigger()['dcterms:title']() "></span></p>
+      <p class="triggerEditor"><span data-bind="text: $root.selectedTrigger()['dcterms:description']() "></span></p>
+    </div>
+    <!-- /ko -->
+    <!-- ko foreach: selectedTrigger().configuration.configs() -->
+
+      <!-- ko if: type() == 'checkbox' -->
+      <p class="triggerEditor"><h5><span data-bind="text: title[$root.lang().lang]()"></span></h5></p>
+      <div data-bind="foreach: values['general'](), visible: $root.selectedTrigger().configuration.number() > 0">
+        <p class="triggerEditor"><input type="checkbox" data-bind="attr: { value: $data }, checked: $root.checkbox">
+          <span data-bind="text: $parent.values[$root.lang().lang]()[$index()]"></span>
+        </input></p>
+      </div>
+      <!-- /ko -->
+      
+      <!-- ko if: type() == 'radiobutton' -->
+      <p class="triggerEditor"><h5><span data-bind="text: title[$root.lang().lang]()"></span></h5></p>
+      <div data-bind="foreach: values['general'](), visible: $root.selectedTrigger().configuration.number() > 0">
+        <p class="triggerEditor"><input type="radio" data-bind="attr: { value: $data }, checked: $root.radiobutton">
+          <span data-bind="text: $parent.values[$root.lang().lang]()[$index()]"></span>
+        </input></p>
+      </div>
+      <!-- /ko -->
+
+      <!-- ko if: type() == 'inputform' -->
+      <p class="triggerEditor"><h5><span data-bind="text: title[$root.lang().lang]()"></span></h5></p>
+        <p class="triggerEditor">
+          <div data-bind="foreach: values['general'](), visible: $root.selectedTrigger().configuration.number() > 0">
+          <h6><span data-bind="text: $parent.values[$root.lang().lang]()[$index()]"></span></h6>
+          <input type="text" data-bind="value: $root.inputform.config[$index()]">
+          </div>
+        </p>
+      <!-- /ko -->
+
+    <!-- /ko --> 
+  </div>
+  <!-- /ko -->
+
+</div>
+<!-- /ko -->
