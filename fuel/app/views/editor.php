@@ -13,7 +13,7 @@
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
 
     <!-- javascript libs-->
-    <?php echo Asset::js(array('jquery-1.8.2.js', 'jquery-ui-1.9.2.custom.min.js', 'jquery.ui.touch-punch.min.js', 'jquery.pajinate.js', 'kendo.web.min.js',
+    <?php echo Asset::js(array('jquery-1.8.2.js', 'jquery-ui-1.9.2.custom.min.js', 'jquery.ui.touch-punch.min.js', 'jquery.ui.position.js', 'jquery.pajinate.js', 'kendo.web.min.js',
     'underscore.js', 'knockout-2.1.0.js', 'knockout.mapping.js', 'sammy-latest.min.js', 'knockout-kendo.min.js', 'jquery.confirm.js', 'jquery.blockUI.js')); ?>
 
     <!-- javascript custom-->
@@ -765,31 +765,12 @@
   
   <!-- ko if: $root.selectedTrigger() != undefined -->
   <div data-bind="visible: $root.selectedTrigger()['@id']() != '' ">
-    <!-- ko if: true -->
+
     <div class="triggerBox">
-      <p class="triggerEditor"><span style="font-weight: 900;" data-bind="text: $root.selectedTrigger()['dcterms:title']() "></span></p>
+      <p class="triggerEditor"><span style="font-weight: 900;" data-bind="text: $root.selectedTrigger()['dcterms:title']()"></span></p>
       <p class="triggerEditor"><span data-bind="text: $root.selectedTrigger()['dcterms:description']() "></span></p>
     </div>
-    <!-- /ko -->
 
-
-      <!-- ko if: false -->
-      <p class="triggerEditor"><h5><span data-bind="text: title[$root.lang().lang]()"></span></h5></p>
-      <div data-bind="foreach: values['general'](), visible: $root.selectedTrigger().configuration.number() > 0">
-        <p class="triggerEditor"><input type="checkbox" data-bind="attr: { value: $data }, checked: $root.checkbox">
-          <span data-bind="text: $parent.values[$root.lang().lang]()[$index()]"></span>
-        </input></p>
-      </div>
-      <!-- /ko -->
-      
-      <!-- ko if: false -->
-      <p class="triggerEditor"><h5><span data-bind="text: title[$root.lang().lang]()"></span></h5></p>
-      <div data-bind="foreach: values['general'](), visible: $root.selectedTrigger().configuration.number() > 0">
-        <p class="triggerEditor"><input type="radio" data-bind="attr: { value: $data }, checked: $root.radiobutton">
-          <span data-bind="text: $parent.values[$root.lang().lang]()[$index()]"></span>
-        </input></p>
-      </div>
-      <!-- /ko -->
 
       <!-- ko if: $root.selectedTrigger()['ewe:hasInputParameter'] != undefined && $root.selectedTrigger()['@type']() == 'ewe:Event' -->
       <p class="triggerEditor"><h5><span data-bind="text: $root.selectedTrigger()['ewe:hasInputParameter']['dcterms:title']() "></span></h5></p>
@@ -800,12 +781,32 @@
         <!-- /ko -->
       <!-- /ko -->
 
-
+      
 
   </div>
   <!-- /ko -->
 
 </div>
+<!-- ko if: $root.selectedTrigger() != undefined -->
+<div id="dialog-output" data-bind="visible:false">
+  <!-- ko if: $root.selectedLeftTrigger() && $root.selectingOutput() -->
+      <div  data-bind="visible: $root.selectedLeftTrigger()">
+        <div data-bind="foreach: $root.thenthatConfig['ewe:hasInputParameter']() ">
+          <p class="triggerEditor" data-bind="text: $data['dcterms:title']() "></p>
+          <!-- ko foreach: $root.ifthisConfig['ewe:hasOutputParameter']() -->
+            <div class="triggerBox outputBox" data-bind="attr: {'id': 'outputBox' + $index()}, click: $root.selectedOutput.bind($data, $index())">
+              <p class="triggerEditor"><span style="font-weight: 900;" data-bind="text: $data['dcterms:title']()"></span></p>
+              <p class="triggerEditor"><span data-bind="text: $data['dcterms:description']() "></span></p>
+            </div>
+          <!-- /ko -->
+          </div>
+      </div>
+      <!-- /ko -->
+
+</div>
+<!-- /ko -->
+
+
 <!-- /ko -->
 
 </body>

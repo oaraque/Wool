@@ -218,56 +218,7 @@ $(document).ready(function () {
         "dcterms:description": "",
         "@type": "",
         "from_channel": "",
-        "ewe:hasInputParameter": {
-            "0": {
-                "@type": "",
-                "dcterms:title": "",
-                "xsd:type": "",
-                "dcterms:description": "",
-            },
-            "1": {
-                "@type": "",
-                "dcterms:title": "",
-                "xsd:type": "",
-                "dcterms:description": "",
-            },
-            "2": {
-                "@type": "",
-                "dcterms:title": "",
-                "xsd:type": "",
-                "dcterms:description": "",
-            },
-            "3": {
-                "@type": "",
-                "dcterms:title": "",
-                "xsd:type": "",
-                "dcterms:description": "",
-            },
-            "4": {
-                "@type": "",
-                "dcterms:title": "",
-                "xsd:type": "",
-                "dcterms:description": "",
-            },
-            "5": {
-                "@type": "",
-                "dcterms:title": "",
-                "xsd:type": "",
-                "dcterms:description": "",
-            },
-            "6": {
-                "@type": "",
-                "dcterms:title": "",
-                "xsd:type": "",
-                "dcterms:description": "",
-            },
-            "7": {
-                "@type": "",
-                "dcterms:title": "",
-                "xsd:type": "",
-                "dcterms:description": "",
-            },
-        },
+        "ewe:hasInputParameter": {},
         "ewe:hasOutputParameter": [],
         "inputform": [],
     }
@@ -405,15 +356,18 @@ $(document).ready(function () {
         self.selectingTrigger = ko.observable(false);
         self.selectingLeftTrigger = ko.observable(false);
         self.selectingRightTrigger = ko.observable(false);
+        self.selectedLeftTrigger = ko.observable(false);
+        self.selectingOutput = ko.observable(false);
 
         // Used for saving editions of channels and triggers
         self.checkbox = ko.observableArray();
         self.radiobutton = ko.observable('');
         self.inputform = ko.mapping.fromJS(templateInputForm);
+        self.outputs = ko.observableArray();
         self.ifthisConfig = ko.mapping.fromJS(templateEventConfig);
         self.thenthatConfig = ko.mapping.fromJS(templateActionConfig);
         self.editionFinished = ko.computed(function(){
-            return ((self.ifthisConfig['@id']() != '') && (self.thenthatConfig['@id']() != ''));
+            return ((self.ifthisConfig['@id']() != '') && (self.thenthatConfig['@id']() != '') && (self.selectingOutput() == false));
         });
         self.editedRuleId = ko.observable('');
 
@@ -863,6 +817,7 @@ $(document).ready(function () {
             var rule = {};
             rule['ifthis'] = self.ifthisConfig;
             rule['thenthat'] = self.thenthatConfig;
+            rule['ifthisOutputs'] = self.outputs();
             rule['edited_ruleId'] = self.editedRuleId();
             rule = ko.toJSON(rule);
             $.ajax({
@@ -927,7 +882,7 @@ $(document).ready(function () {
                 if(option == 'Cancel'){ self.cleanConfiguration(self.ifthisConfig); }    
             }
             if(self.selectingRightTrigger()) {
-                if(option == 'OK'){ self.saveConfig(self.thenthatConfig); }
+                if(option == 'OK'){ self.saveConfig(self.thenthatConfig); self.selectOutput(); }
                 if(option == 'Cancel'){ self.cleanConfiguration(self.thenthatConfig); }
             }
             
@@ -937,6 +892,7 @@ $(document).ready(function () {
             self.selectingLeftTrigger(false);
             self.selectingRightTrigger(false);
             self.selectingTrigger(false);
+            self.selectedTrigger(undefined);
         }
 
         /*
@@ -976,12 +932,12 @@ $(document).ready(function () {
             //     }
             // }
             if(container == self.ifthisConfig) {
+                self.selectedLeftTrigger(false);
                 ko.mapping.fromJS(templateEventConfig, self.ifthisConfig);
             }
             if(container == self.thenthatConfig) {
                 ko.mapping.fromJS(templateActionConfig, self.thenthatConfig);
             }
-            
             //self.cleanWithLanguages(container.name);
 
         }
@@ -1036,6 +992,10 @@ $(document).ready(function () {
             container.inputform(self.inputform.data());
             self.inputform.data('');
             container['from_channel'](self.selectedChannelId());
+
+            if(container == self.ifthisConfig) {
+                self.selectedLeftTrigger(true);
+            }
 
             // Saves to ifthisConfig the name of the selected trigger in all the available languages
             //self.saveWithLanguages(container.name, self.selectedTrigger().name);
@@ -1108,6 +1068,64 @@ $(document).ready(function () {
         }
 
         /*
+            Called when an output is selected
+        */
+        self.selectedOutput = function(index) {
+            for (var i = self.ifthisConfig['ewe:hasOutputParameter']().length - 1; i >= 0; i--) {
+                $('#outputBox'+i).removeClass('selectedOutputBox');
+            };
+            $('#outputBox'+index).addClass('selectedOutputBox');
+            self.outputs.removeAll();
+            self.outputs().push(index);
+        }
+
+        /*
+            Checks that the outputs are correctly checked. If yes, returns true.
+            If not, returns false.
+        */
+        self.checkOutputs = function() {
+
+        }
+        /* 
+            Shows a modal dialog that allows the user to select the outputs of left channels
+            that will be used into the inputs of the right channel
+        */
+        self.selectOutput = function() {
+            self.selectingOutput(true);
+
+            $("#dialog-output").dialog({
+                dialogClass: "no-close",
+                modal: true,
+                draggable: false,
+                resizable: false,
+                autoResize: true,
+                autoReposition: true,
+                width: 'auto',
+                show: { effect: 'drop', duration: 300 },
+                hide: { effect: 'slideUp', duration: 500 },
+                title: self.lang().t7,
+                buttons: {
+                    
+                    OK: function() {
+                        if(self.outputs()[0] != undefined){
+                            self.selectingOutput(false);
+                        }
+                        $(this).dialog('close');
+                    },
+                    Cancel: function() {
+                        self.outputs.removeAll();
+                        $(this).dialog('close');
+                    }
+                },
+                resize: function(envent, ui){
+                    console.log("resize event")
+                    $("#dialog-modal").dialog("widget").animate(ui.size);
+                }
+            });
+
+        }
+
+        /*
             Function called when a channel is dropped into a container
         */
         self.showTriggers = function(channel, objChannel, side) {
@@ -1150,6 +1168,7 @@ $(document).ready(function () {
                 draggable: false,
                 resizable: false,
                 autoResize: true,
+                autoReposition: true,
                 show: { effect: 'drop', duration: 300 },
                 hide: { effect: 'slideUp', duration: 500 },
                 title: self.lang().t1,
@@ -1160,7 +1179,7 @@ $(document).ready(function () {
                         if(self.selectedTrigger() == undefined) { 
                             objChannel.containerName('');
                             objChannel.containerLogo('');
-                            self.selectingTriggerEnded()
+                            self.selectingTriggerEnded();
                             $(this).dialog('close');
                             return; 
                         }

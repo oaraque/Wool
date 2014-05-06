@@ -115,8 +115,7 @@
 <div id="main" class="mainContainer" data-bind="visible: page() < 3">
 
 <!-- DROPPABLES -->
-<div class="dropContainer" data-bind="css: { offerContainer: page() == 0 }" >
-</div>
+
 <!-- DRAGGABLES -->
 <div class="dragContainer" data-bind="visible: !editionFinished()">
 

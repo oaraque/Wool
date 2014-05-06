@@ -1455,6 +1455,7 @@ height: 80px;
   display: none;
 }
 .ui-dialog { 
+  width: auto;
   border-radius: 8px 8px 8px 8px; border-width: 8px 8px 8px 8px;
   border-color: #66A67C;
 }
@@ -1507,6 +1508,12 @@ height: 80px;
   font-size: 1.2em;
 }
 
+.triggerEditorTitle {
+  margin: 5px;
+  margin-top: 30px;
+  font-size: 1.4em;
+}
+
 .accept-button {
   border: 3px solid #ccc;
   border-radius: 10px 10px 10px 10px;
@@ -1532,6 +1539,18 @@ height: 80px;
 
 .triggerBox {
   border: 1px solid #C8BFC4;
+  border-radius: 8px 8px 8px 8px; border-width: 5px 5px 5px 5px;
+  margin: 10px;
+}
+
+.outputBox:hover {
+  border: 1px solid #00B800;
+  border-radius: 8px 8px 8px 8px; border-width: 5px 5px 5px 5px;
+  margin: 10px;
+}
+
+.selectedOutputBox {
+  border: 1px solid #00B800;
   border-radius: 8px 8px 8px 8px; border-width: 5px 5px 5px 5px;
   margin: 10px;
 }
